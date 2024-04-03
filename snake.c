@@ -96,16 +96,18 @@ int pop_from_buffer(buffer* b) {
 	}
 }
 
+int tmp_x, tmp_y;
 void initialize() {
 	srand(time(NULL));
-	set_point(&game.size, 64, 64);
+	initscr();
+	timeout(1);
+	getmaxyx(stdscr, game.size.y, game.size.x);
+	game.size.x >>= 1; // divide both by 2 since we add spaces after
 	game.board = calloc(game.size.x * game.size.y, sizeof(*game.board));
 
 	set_point(&game.player.pos, game.size.x/2, game.size.y/2);
 	game.player.status = player_alive;
 
-	initscr();
-	timeout(1);
 
 	generate_new_apple(&game);
 	game.player.length = 1;
@@ -233,6 +235,7 @@ void draw_board() {
 		}
 		addch('\n');
 	}
+	refresh();
 }
 
 
@@ -252,7 +255,7 @@ int main() {
 		draw_board();
 
 		int c;
-		while ((((double)((stop = clock()) - start))/CLOCKS_PER_SEC) <= 0.004) {
+		while ((((double)((stop = clock()) - start))/CLOCKS_PER_SEC) <= 0.003) {
 			if ((c = getch()) != -1) {
 				push_to_buffer(&input_buffer, c);
 			}
